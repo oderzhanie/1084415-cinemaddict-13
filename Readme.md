@@ -1,7 +1,7 @@
 # Проект «Киноман» [![Build status][travis-image]][travis-url]
 
 * Студент: [Irina Sadovskaya](https://up.htmlacademy.ru/ecmascript/13/user/1084415).
-* Наставник: `Неизвестно`.
+* Наставник: [Svetlana Blinova](https://htmlacademy.ru/profile/id1432187).
 
 ---
 
