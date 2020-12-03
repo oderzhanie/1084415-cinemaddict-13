@@ -42,8 +42,6 @@ export const getRandomName = () => {
   return `${getRandomElem(FIRST_NAMES)} ${getRandomElem(LAST_NAMES)}`;
 };
 
-
-
 export const getRandomDescription = (description) => {
   const sentences = description.split(`. `);
   const randomSentences = getRandomArray(sentences);

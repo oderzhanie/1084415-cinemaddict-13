@@ -1,4 +1,5 @@
-import {CARDS_NUMBER, EXTRAS_NUMBER, EXTRAS_NAMES, FILM_COUNT_PER_STEP} from "../src/utils/const.js";
+import {CARDS_NUMBER, EXTRAS_NUMBER, EXTRAS_NAMES, FILM_COUNT_PER_STEP} from "./utils/const.js";
+import {getRandomIndex} from "./utils/utils.js";
 import {createUserStatus} from "../src/view/user-status.js";
 import {createMainSiteMenu} from "../src/view/main-site-menu.js";
 import {createMainSortingFilter} from "../src/view/main-sorting-filter.js";
@@ -57,18 +58,18 @@ if (films.length > FILM_COUNT_PER_STEP) {
   });
 }
 
-Array(EXTRAS_NUMBER).fill(``).forEach(() => {
-  render(siteMainFilms, createFilmsListExtra());
-});
-
+render(siteMainFilms, createFilmsListExtra(EXTRAS_NAMES[0]));
+render(siteMainFilms, createFilmsListExtra(EXTRAS_NAMES[1]));
 const filmsListsExtra = siteMainFilms.querySelectorAll(`.films-list--extra`);
+
 for (const filmsListExtra of filmsListsExtra) {
   render(filmsListExtra, createFilmsListContainer());
   const extraContainer = filmsListExtra.querySelector(`.films-list__container`);
   for (let i = 0; i < EXTRAS_NUMBER; i++) {
-    render(extraContainer, createFilmCard(films[i]));
+    const randomIndex = getRandomIndex(films);
+    render(extraContainer, createFilmCard(films[randomIndex]));
   }
 }
 
-// render(siteMainElement, createFilmDetailsPopup(films[0]));
+render(siteMainElement, createFilmDetailsPopup(films[0]));
 
