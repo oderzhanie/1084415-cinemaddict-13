@@ -1,7 +1,9 @@
+import {CARDS_NUMBER} from "../utils/const.js";
+
 const createFooterStats = () => {
   return (
     `<section class="footer__statistics">
-      <p>130 291 movies inside</p>
+      <p>${CARDS_NUMBER} movies inside</p>
     </section>`
   );
 };
