@@ -47,11 +47,7 @@ const createFilmDetailsPopup = (film) => {
         commentHour = `0${commentHour}`;
       }
 
-      let commentMinutes = item.date.getMinutes();
-      if (commentMinutes < 10) {
-        commentMinutes = commentMinutes.toString().padStart(2, `0`);
-      }
-
+      let commentMinutes = item.date.getMinutes().toString().padStart(2, `0`);
       const commentFullDate = `${commentYear}/${commentMonth}/${commentDate}  ${commentHour}:${commentMinutes}`;
 
       item =
