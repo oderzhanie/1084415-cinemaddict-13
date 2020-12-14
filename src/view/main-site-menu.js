@@ -1,21 +1,22 @@
+import {createElement} from "../utils/utils.js";
+
 const createFilterTemplate = (filter) => {
   const {name, count} = filter;
+
   const upperName = () => {
-    let low = name;
-    const newFirstLetter = low[0].toUpperCase();
-    low = low.replace(low[0], newFirstLetter);
-    return low;
+    const newName = name.charAt(0).toUpperCase() + name.slice(1);
+    return newName;
   };
 
   return (
-    `<a href="#${name}" class="main-navigation__item">${upperName(name)} <span class="main-navigation__item-count">${count}</span></a>`
+    `<a href="#${name}" class="main-navigation__item">${upperName()} <span class="main-navigation__item-count">${count}</span></a>`
   );
 };
 
 
 const createMainSiteMenu = (filterItems) => {
   const filterItemsTemplate = filterItems
-    .map((filter, index) => createFilterTemplate(filter, index === 0))
+    .map((filter) => createFilterTemplate(filter))
     .join(``);
 
 
@@ -30,4 +31,25 @@ const createMainSiteMenu = (filterItems) => {
   );
 };
 
-export {createMainSiteMenu};
+export default class SiteMenu {
+  constructor(filters) {
+    this._filters = filters;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createMainSiteMenu(this._filters);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

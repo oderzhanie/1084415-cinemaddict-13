@@ -1,3 +1,5 @@
+import {createElement} from "../utils/utils.js";
+
 const createMainSortingFilter = () => {
   return (
     `<ul class="sort">
@@ -8,4 +10,24 @@ const createMainSortingFilter = () => {
   );
 };
 
-export {createMainSortingFilter};
+export default class MainSortingFilters {
+  constructor() {
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createMainSortingFilter();
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

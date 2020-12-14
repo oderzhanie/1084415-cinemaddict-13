@@ -5,7 +5,7 @@ import {getCommentsArray} from "../mocks/comments.js";
 const getRandomElements = () => {
   const elements = [];
   const number = getRandomInteger(ELEMENTS_MIN, ELEMENTS_MAX);
-  for (let i = 0; i < number - 1; i++) {
+  for (let i = 0; i < number; i++) {
     const elem = getRandomName();
     elements.push(elem);
   }

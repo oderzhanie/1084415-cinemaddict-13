@@ -1,6 +1,7 @@
 import {MONTHS} from "../utils/const.js";
+import {createElement, getRunTime} from "../utils/utils.js";
 
-export const createFilmDetailsPopup = (film) => {
+const createFilmDetailsPopup = (film) => {
   const {title, rating, genre, runtime, commentsCount, comments, poster, originalTitle, director, writers, actors, releaseFullDate, country, fullDescription, ageRestriction, isWatched, isWatchingList, isFavorite} = film;
   const day = releaseFullDate.getDate();
   const month = releaseFullDate.getMonth();
@@ -13,43 +14,24 @@ export const createFilmDetailsPopup = (film) => {
 
   const releaseDate = `${day} ${monthToWord(month)} ${year}`;
 
-  const watchingListClassName = isWatchingList ? `film-details__control-input:checked + .film-details__control-label ` : `film-details__control-label--watchlist::before`;
-  const favoriteClassName = isFavorite ? `film-details__control-input:checked + .film-details__control-label` : `film-details__control-label--favorite::before`;
-  const watchedClassName = isWatched ? `film-details__control-input:checked + .film-details__control-label ` : `film-details__control-label--watched::before`; // Проверить, правильные ли классы и логика показа
-  const getRunTime = () => {
-    if (runtime.hours === 0) {
-      return (
-        ` ${runtime.minutes}m`
-      );
-    } else if (runtime.minutes === 0) {
-      return (
-        `${runtime.hours}h`
-      );
-    } else {
-      return (
-        `${runtime.hours}h ${runtime.minutes}m`
-      );
-    }
-  };
+  const watchingListChecked = isWatchingList ? `checked` : ``;
+  const favoriteChecked = isFavorite ? `checked` : ``;
+  const watchedChecked = isWatched ? `checked` : ``;
+
+  const watchingListLabel = isWatchingList ? `Added to watchlist` : `Add to watchlist`;
+  const watchedLabel = isWatched ? `Already watched` : `Mark as watched`;
+  const favoriteLabel = isFavorite ? `Added to favorites` : `Add to favorites`;
+
+  const filmRuntime = getRunTime(runtime.hours, runtime.minutes);
 
   const createGenresTemplate = () => {
-    if (genre.length === 1) {
-      return (
-        `<tr class="film-details__row">
+    return (
+      `<tr class="film-details__row">
           <td class="film-details__term">Genre</td>
-          <td class="film-details__cell">
-            <span class="film-details__genre">${genre}</span>
-        </tr>`
-      );
-    } else {
-      return (
-        `<tr class="film-details__row">
-          <td class="film-details__term">Genres</td>
           <td class="film-details__cell">
             <span class="film-details__genre">${genre.join(` `)}</span>
         </tr>`
-      );
-    }
+    );
   };
 
   const createCommentsTemplate = () => {
@@ -67,7 +49,7 @@ export const createFilmDetailsPopup = (film) => {
 
       let commentMinutes = item.date.getMinutes();
       if (commentMinutes < 10) {
-        commentMinutes = `0${commentMinutes}`;
+        commentMinutes = commentMinutes.toString().padStart(2, `0`);
       }
 
       const commentFullDate = `${commentYear}/${commentMonth}/${commentDate}  ${commentHour}:${commentMinutes}`;
@@ -134,7 +116,7 @@ export const createFilmDetailsPopup = (film) => {
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Runtime</td>
-                <td class="film-details__cell">${getRunTime()}</td>
+                <td class="film-details__cell">${filmRuntime}</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Country</td>
@@ -148,12 +130,14 @@ export const createFilmDetailsPopup = (film) => {
           </div>
         </div>
         <section class="film-details__controls">
-          <input type="checkbox" class="film-details__control-input visually-hidden" id="watchlist" name="watchlist">
-          <label for="watchlist" class="film-details__control-label ${watchingListClassName}">Add to watchlist</label>
-          <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" name="watched">
-          <label for="watched" class="film-details__control-label ${watchedClassName}">Already watched</label>
-          <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite">
-          <label for="favorite" class="film-details__control-label ${favoriteClassName}">Add to favorites</label>
+          <input type="checkbox" class="film-details__control-input visually-hidden" id="watchlist" name="watchlist" ${watchingListChecked}>
+          <label for="watchlist" class="film-details__control-label film-details__control-label--watchlist">${watchingListLabel}</label>
+
+          <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" name="watched" ${watchedChecked}>
+          <label for="watched" class="film-details__control-label film-details__control-label--watched">${watchedLabel}</label>
+
+          <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite" ${favoriteChecked}>
+          <label for="favorite" class="film-details__control-label film-details__control-label--favorite">${favoriteLabel}</label>
         </section>
       </div>
       <div class="form-details__bottom-container">
@@ -192,3 +176,26 @@ export const createFilmDetailsPopup = (film) => {
   </section>`
   );
 };
+
+export default class FilmDetailsPopup {
+  constructor(film) {
+    this._film = film;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createFilmDetailsPopup(this._film);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

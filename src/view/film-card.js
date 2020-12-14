@@ -1,23 +1,11 @@
-export const createFilmCard = (film) => {
+import {createElement, getRunTime} from "../utils/utils.js";
+
+const createFilmCard = (film) => {
   const {title, poster, rating, shortDescription, genre, runtime, commentsCount, releaseYear, isWatched, isWatchingList, isFavorite} = film;
 
   const mainGenre = genre[0];
 
-  const getRunTime = () => {
-    if (runtime.hours === 0) {
-      return (
-        ` ${runtime.minutes}m`
-      );
-    } else if (runtime.minutes === 0) {
-      return (
-        `${runtime.hours}h`
-      );
-    } else {
-      return (
-        `${runtime.hours}h ${runtime.minutes}m`
-      );
-    }
-  };
+  const filmRuntime = getRunTime(runtime.hours, runtime.minutes);
 
   const getShortDescription = () => {
     if (shortDescription.length < 140) {
@@ -28,17 +16,7 @@ export const createFilmCard = (film) => {
     }
   };
 
-  const getComments = () => {
-    if (commentsCount === 1) {
-      return (
-        `${commentsCount} comment`
-      );
-    } else {
-      return (
-        `${commentsCount} comments`
-      );
-    }
-  };
+  const getComments = () => commentsCount > 1 ? `${commentsCount} comments` : `${commentsCount} comment`;
 
   const watchingListClassName = isWatchingList ? `film-card__controls-item--add-to-watchlist film-card__controls-item--active` : `film-card__controls-item--add-to-watchlist`;
   const favoriteClassName = isFavorite ? `film-card__controls-item--favorite film-card__controls-item--active` : `film-card__controls-item--favorite`;
@@ -50,7 +28,7 @@ export const createFilmCard = (film) => {
       <p class="film-card__rating">${rating}</p>
       <p class="film-card__info">
         <span class="film-card__year">${releaseYear}</span>
-        <span class="film-card__duration">${getRunTime()}</span>
+        <span class="film-card__duration">${filmRuntime}</span>
         <span class="film-card__genre">${mainGenre}</span>
       </p>
       <img src="${poster}" alt="${title}" class="film-card__poster">
@@ -64,3 +42,26 @@ export const createFilmCard = (film) => {
     </article>`
   );
 };
+
+export default class FilmCard {
+  constructor(film) {
+    this._film = film;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createFilmCard(this._film);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
