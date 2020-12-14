@@ -1,3 +1,5 @@
+import {createElement} from "../utils/utils.js";
+
 const createFilmsList = () => {
   return (
     `<section class="films-list">
@@ -6,4 +8,24 @@ const createFilmsList = () => {
   );
 };
 
-export {createFilmsList};
+export default class FilmsList {
+  constructor() {
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createFilmsList();
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

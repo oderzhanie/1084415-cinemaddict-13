@@ -1,3 +1,5 @@
+import {createElement} from "../utils/utils.js";
+
 const createUserStatus = () => {
   return (
     `<section class="header__profile profile">
@@ -7,4 +9,24 @@ const createUserStatus = () => {
   );
 };
 
-export {createUserStatus};
+export default class UserStatus {
+  constructor() {
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createUserStatus();
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
