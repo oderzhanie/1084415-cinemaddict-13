@@ -1,4 +1,5 @@
-import {createElement, getRunTime} from "../utils/utils.js";
+import {getRunTime} from "../utils/utils.js";
+import Abstract from "./abstract.js";
 
 const createFilmCard = (film) => {
   const {title, poster, rating, shortDescription, genre, runtime, commentsCount, releaseYear, isWatched, isWatchingList, isFavorite} = film;
@@ -43,25 +44,14 @@ const createFilmCard = (film) => {
   );
 };
 
-export default class FilmCard {
+export default class FilmCard extends Abstract {
   constructor(film) {
+    super();
+
     this._film = film;
-    this._element = null;
   }
 
   getTemplate() {
     return createFilmCard(this._film);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

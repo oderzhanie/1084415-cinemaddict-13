@@ -1,5 +1,6 @@
 import {MONTHS} from "../utils/const.js";
-import {createElement, getRunTime} from "../utils/utils.js";
+import {getRunTime} from "../utils/utils.js";
+import Abstract from "./abstract.js";
 
 const createFilmDetailsPopup = (film) => {
   const {title, rating, genre, runtime, commentsCount, comments, poster, originalTitle, director, writers, actors, releaseFullDate, country, fullDescription, ageRestriction, isWatched, isWatchingList, isFavorite} = film;
@@ -173,25 +174,14 @@ const createFilmDetailsPopup = (film) => {
   );
 };
 
-export default class FilmDetailsPopup {
+export default class FilmDetailsPopup extends Abstract {
   constructor(film) {
+    super();
+
     this._film = film;
-    this._element = null;
   }
 
   getTemplate() {
     return createFilmDetailsPopup(this._film);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
