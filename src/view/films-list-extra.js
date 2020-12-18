@@ -9,6 +9,11 @@ const createFilmsListExtra = (name) => {
 };
 
 export default class FilmsListExtra extends Abstract {
+  constructor(name) {
+    super();
+    this.name = name;
+  }
+
   getTemplate() {
     return createFilmsListExtra(this.name);
   }

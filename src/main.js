@@ -1,5 +1,5 @@
 import {CARDS_NUMBER, EXTRAS_NUMBER, EXTRAS_NAMES, FILM_COUNT_PER_STEP} from "./utils/const.js";
-import {getRandomIndex, render, RenderPosition} from "./utils/utils.js";
+import {getRandomIndex} from "./utils/utils.js";
 import UserStatus from "../src/view/user-status.js";
 import SiteMenu from "../src/view/main-site-menu.js";
 import MainSortingFilters from "../src/view/main-sorting-filter.js";
@@ -14,6 +14,7 @@ import FilmDetailsPopup from "../src/view/film-details-popup.js";
 import NoFilms from "../src/view/no-films.js";
 import {generateFilm} from "./mocks/film-card.js";
 import {generateFilter} from "./mocks/filter.js";
+import {render, RenderPosition, remove} from "./utils/render.js";
 
 const films = new Array(CARDS_NUMBER).fill(``).map(generateFilm);
 const filters = generateFilter(films);
@@ -22,17 +23,17 @@ const siteHeader = document.querySelector(`.header`);
 const siteMainElement = document.querySelector(`.main`);
 const siteFooter = document.querySelector(`.footer`);
 
-render(siteHeader, new UserStatus().getElement(), RenderPosition.BEFOREEND);
-render(siteMainElement, new SiteMenu(filters).getElement(), RenderPosition.BEFOREEND);
-render(siteMainElement, new MainSortingFilters(filters).getElement(), RenderPosition.BEFOREEND);
-render(siteFooter, new FooterStats().getElement(), RenderPosition.BEFOREEND);
-render(siteMainElement, new MainFilmsSection().getElement(), RenderPosition.BEFOREEND);
+render(siteHeader, new UserStatus(), RenderPosition.BEFOREEND);
+render(siteMainElement, new SiteMenu(filters), RenderPosition.BEFOREEND);
+render(siteMainElement, new MainSortingFilters(filters), RenderPosition.BEFOREEND);
+render(siteFooter, new FooterStats(), RenderPosition.BEFOREEND);
+render(siteMainElement, new MainFilmsSection(), RenderPosition.BEFOREEND);
 
 const siteMainFilms = siteMainElement.querySelector(`.films`);
-render(siteMainFilms, new FilmsList().getElement(), RenderPosition.BEFOREEND);
+render(siteMainFilms, new FilmsList(), RenderPosition.BEFOREEND);
 
 const filmsList = siteMainFilms.querySelector(`.films-list`);
-render(filmsList, new FilmsListContainer().getElement(), RenderPosition.BEFOREEND);
+render(filmsList, new FilmsListContainer(), RenderPosition.BEFOREEND);
 const filmsListContainer = siteMainFilms.querySelector(`.films-list__container`);
 
 const renderFilm = (filmListElement, film) => {
@@ -42,33 +43,30 @@ const renderFilm = (filmListElement, film) => {
   const onEscKeyDown = (evt) => {
     if (evt.key === `Escape` || evt.key === `Esc`) {
       evt.preventDefault();
-      filmDetailsComponent.getElement().remove();
+      remove(filmDetailsComponent);
       document.removeEventListener(`keydown`, onEscKeyDown);
+
+      const body = document.querySelector(`body`);
+      body.classList.remove(`hide-overflow`);
     }
   };
 
-  const openPopupElements = filmComponent.getElement().querySelectorAll(`.film-card__title, .film-card__poster, .film-card__comments`);
-  for (let elem of openPopupElements) {
-    elem.addEventListener(`click`, () => {
-      render(siteMainElement, filmDetailsComponent.getElement(), RenderPosition.BEFOREEND);
-      document.addEventListener(`keydown`, onEscKeyDown);
-
-      const body = document.querySelector(`body`);
-      body.classList.add(`hide-overflow`);
-    });
-  }
-
-  const closePopup = filmDetailsComponent.getElement().querySelector(`.film-details__close-btn`);
-  closePopup.addEventListener(`click`, (evt) => {
-    evt.preventDefault();
-    filmDetailsComponent.getElement().remove();
-    document.removeEventListener(`keydown`, onEscKeyDown);
+  filmComponent.setOpenClickHandler(() => {
+    render(siteMainElement, filmDetailsComponent, RenderPosition.BEFOREEND);
+    document.addEventListener(`keydown`, onEscKeyDown);
 
     const body = document.querySelector(`body`);
-    body.classList.remove(`hide-overflow`);
+    body.classList.add(`hide-overflow`);
+
+    filmDetailsComponent.setClosePopupHandler(() => {
+      remove(filmDetailsComponent);
+      document.removeEventListener(`keydown`, onEscKeyDown);
+
+      body.classList.remove(`hide-overflow`);
+    });
   });
 
-  render(filmListElement, filmComponent.getElement(), RenderPosition.BEFOREEND);
+  render(filmListElement, filmComponent, RenderPosition.BEFOREEND);
 };
 
 films
@@ -76,17 +74,16 @@ films
 .forEach((film) => renderFilm(filmsListContainer, film));
 
 if (films.length === 0) {
-  render(filmsList, new NoFilms().getElement(), RenderPosition.BEFOREEND);
+  render(filmsList, new NoFilms(), RenderPosition.BEFOREEND);
 }
 
 if (films.length > FILM_COUNT_PER_STEP) {
   let renderedFilmCount = FILM_COUNT_PER_STEP;
 
   const showMoreButtonComponent = new ShowMoreButton();
-  render(filmsList, showMoreButtonComponent.getElement(), RenderPosition.BEFOREEND);
+  render(filmsList, showMoreButtonComponent, RenderPosition.BEFOREEND);
 
-  showMoreButtonComponent.getElement().addEventListener(`click`, (evt) => {
-    evt.preventDefault();
+  showMoreButtonComponent.setClickHandler(() => {
     films
     .slice(renderedFilmCount, renderedFilmCount + FILM_COUNT_PER_STEP)
     .forEach((film) => renderFilm(filmsListContainer, film));
@@ -94,19 +91,18 @@ if (films.length > FILM_COUNT_PER_STEP) {
     renderedFilmCount += FILM_COUNT_PER_STEP;
 
     if (renderedFilmCount >= films.length) {
-      showMoreButtonComponent.getElement().remove();
-      showMoreButtonComponent.removeElement();
+      remove(showMoreButtonComponent);
     }
   });
 }
 
 if (films.length > 0) {
-  render(siteMainFilms, new FilmsListExtra(EXTRAS_NAMES[0]).getElement(), RenderPosition.BEFOREEND);
-  render(siteMainFilms, new FilmsListExtra(EXTRAS_NAMES[1]).getElement(), RenderPosition.BEFOREEND);
+  render(siteMainFilms, new FilmsListExtra(EXTRAS_NAMES[0]), RenderPosition.BEFOREEND);
+  render(siteMainFilms, new FilmsListExtra(EXTRAS_NAMES[1]), RenderPosition.BEFOREEND);
   const filmsListsExtra = siteMainFilms.querySelectorAll(`.films-list--extra`);
 
   for (const filmsListExtra of filmsListsExtra) {
-    render(filmsListExtra, new FilmsListContainer().getElement(), RenderPosition.BEFOREEND);
+    render(filmsListExtra, new FilmsListContainer(), RenderPosition.BEFOREEND);
     const extraContainer = filmsListExtra.querySelector(`.films-list__container`);
     for (let i = 0; i < EXTRAS_NUMBER; i++) {
       const randomIndex = getRandomIndex(films);

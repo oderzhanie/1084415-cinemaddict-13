@@ -177,11 +177,22 @@ const createFilmDetailsPopup = (film) => {
 export default class FilmDetailsPopup extends Abstract {
   constructor(film) {
     super();
-
     this._film = film;
+
+    this._closePopupHandler = this._closePopupHandler.bind(this);
   }
 
   getTemplate() {
     return createFilmDetailsPopup(this._film);
+  }
+
+  _closePopupHandler(evt) {
+    evt.preventDefault();
+    this._callback.closePopup();
+  }
+
+  setClosePopupHandler(callback) {
+    this._callback.closePopup = callback;
+    this.getElement().querySelector(`.film-details__close-btn`).addEventListener(`click`, this._closePopupHandler);
   }
 }
