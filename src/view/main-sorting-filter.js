@@ -1,4 +1,4 @@
-import {createElement} from "../utils/utils.js";
+import Abstract from "./abstract.js";
 
 const createMainSortingFilter = () => {
   return (
@@ -10,24 +10,8 @@ const createMainSortingFilter = () => {
   );
 };
 
-export default class MainSortingFilters {
-  constructor() {
-    this._element = null;
-  }
-
+export default class MainSortingFilters extends Abstract {
   getTemplate() {
     return createMainSortingFilter();
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

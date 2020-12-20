@@ -1,4 +1,4 @@
-import {createElement} from "../utils/utils.js";
+import Abstract from "./abstract.js";
 
 const createFilmsListExtra = (name) => {
   return (
@@ -8,25 +8,13 @@ const createFilmsListExtra = (name) => {
   );
 };
 
-export default class FilmsListExtra {
+export default class FilmsListExtra extends Abstract {
   constructor(name) {
+    super();
     this.name = name;
-    this._element = null;
   }
 
   getTemplate() {
     return createFilmsListExtra(this.name);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

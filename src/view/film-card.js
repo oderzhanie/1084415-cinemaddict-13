@@ -1,4 +1,5 @@
-import {createElement, getRunTime} from "../utils/utils.js";
+import {getRunTime} from "../utils/utils.js";
+import Abstract from "./abstract.js";
 
 const createFilmCard = (film) => {
   const {title, poster, rating, shortDescription, genre, runtime, commentsCount, releaseYear, isWatched, isWatchingList, isFavorite} = film;
@@ -43,25 +44,24 @@ const createFilmCard = (film) => {
   );
 };
 
-export default class FilmCard {
+export default class FilmCard extends Abstract {
   constructor(film) {
+    super();
     this._film = film;
-    this._element = null;
+    this._openClickHandler = this._openClickHandler.bind(this);
   }
 
   getTemplate() {
     return createFilmCard(this._film);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  _openClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.openClick();
   }
 
-  removeElement() {
-    this._element = null;
+  setOpenClickHandler(callback) {
+    this._callback.openClick = callback;
+    this.getElement().querySelectorAll(`.film-card__title, .film-card__poster, .film-card__comments`).forEach((elem) => elem.addEventListener(`click`, this._openClickHandler));
   }
 }
