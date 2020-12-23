@@ -31,7 +31,7 @@ const createMainSiteMenu = (filterItems) => {
   );
 };
 
-export default class SiteMenu extends Abstract {
+export default class MainSiteMenu extends Abstract {
   constructor(filters) {
     super();
     this._filters = filters;
