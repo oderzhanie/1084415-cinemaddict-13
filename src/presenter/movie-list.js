@@ -8,10 +8,10 @@ import NoFilms from "../view/no-films.js";
 import {SortType} from "../utils/const.js";
 import {sortFilmDate, sortFilmRating} from "../utils/film.js";
 import {updateItem} from "../utils/utils.js";
-// import FilmsListExtra from "../view/films-list-extra.js";
+import FilmsListExtra from "../view/films-list-extra.js";
 
 import {render, RenderPosition, remove} from "../utils/render.js";
-import {FILM_COUNT_PER_STEP /* EXTRAS_NUMBER, EXTRAS_NAMES*/} from "../utils/const.js";
+import {FILM_COUNT_PER_STEP, EXTRAS_NUMBER, EXTRAS_NAMES} from "../utils/const.js";
 
 export default class MovieList {
   constructor(movieListContainer) {
@@ -19,6 +19,7 @@ export default class MovieList {
     this._renderedFilmCount = FILM_COUNT_PER_STEP;
     this._currentSortType = SortType.DEFAULT;
     this._filmCardPresenter = {};
+    this._filmCardPresenterExtra = {};
 
     this._mainFilmsSectionComponent = new MainFilmsSection();
     this._mainSortingFilterComponent = new MainSortingFilter();
@@ -44,6 +45,7 @@ export default class MovieList {
     render(this._filmsListComponent, this._filmsListContainerComponent, RenderPosition.BEFOREEND);
 
     this._renderFilmsList();
+    this._renderExtras();
   }
 
   _handleFilmChange(updatedFilm) {
@@ -145,33 +147,37 @@ export default class MovieList {
     this._renderFilmsItems();
   }
 
-  // _renderExtras() {
-  //   if (this._films.length > 0) {
-  //     const mostRated = this._films.slice().filter(() => {
+  _renderExtras() {
+    if (this._films.length > 0) {
+      const extraRatedList = new FilmsListExtra(EXTRAS_NAMES[0]);
+      render(this._mainFilmsSectionComponent, extraRatedList, RenderPosition.BEFOREEND);
+      const extraRatedContainer = new FilmsListContainer();
+      render(extraRatedList, extraRatedContainer, RenderPosition.BEFOREEND);
 
-  //     })
+      const ratedList = this._films.slice().sort(sortFilmRating);
+      const mostRated = ratedList.slice(0, EXTRAS_NUMBER);
+      mostRated.forEach((film) => {
+        const filmCardPresenter = new FilmCardPresenter(extraRatedContainer, this._handleFilmChange);
+        filmCardPresenter.init(film);
+        this._filmCardPresenterExtra[film.id] = filmCardPresenter;
+      });
 
-  //     const extraRated = new FilmsListExtra(EXTRAS_NAMES[0]);
-  //     render(this._movieListContainer, extraRated, RenderPosition.BEFOREEND);
-  //     const extraRatedContainer = new FilmsListContainer();
-  //     render(extraRated, extraRatedContainer, RenderPosition.BEFOREEND);
 
+      const mostWatchedList = this._films.slice().filter((film) => film.isWatched);
+      if (mostWatchedList.length > 0) {
+        const extraWatchedList = new FilmsListExtra(EXTRAS_NAMES[1]);
+        render(this._mainFilmsSectionComponent, extraWatchedList, RenderPosition.BEFOREEND);
+        const extraWatchedContainer = new FilmsListContainer();
+        render(extraWatchedList, extraWatchedContainer, RenderPosition.BEFOREEND);
 
-  //     // const extraWatched = new FilmsListExtra(EXTRAS_NAMES[1]);
-
-  //     // render(this._movieListContainer, extraWatched, RenderPosition.BEFOREEND);
-
-  //     // const filmsListsExtra = this._movieListContainer.querySelectorAll(`.films-list--extra`);
-
-  //     // for (const filmsListExtra of filmsListsExtra) {
-  //     //   render(filmsListExtra, new FilmsListContainer(), RenderPosition.BEFOREEND);
-  //     //   const extraContainer = filmsListExtra.querySelector(`.films-list__container`);
-  //     //   for (let i = 0; i < EXTRAS_NUMBER; i++) {
-  //     //     const randomIndex = getRandomIndex(films);
-  //     //     renderFilm(extraContainer, this._films[randomIndex]);
-  //     //   }
-  //     // }
-  //   }
-  // }
+        const mostWatched = mostWatchedList.slice(0, EXTRAS_NUMBER);
+        mostWatched.forEach((film) => {
+          const filmCardPresenter = new FilmCardPresenter(extraWatchedContainer, this._handleFilmChange);
+          filmCardPresenter.init(film);
+          this._filmCardPresenterExtra[film.id] = filmCardPresenter;
+        });
+      }
+    }
+  }
 }
 
