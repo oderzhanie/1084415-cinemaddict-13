@@ -90,3 +90,9 @@ export const COUNTRIES = [
   `Russia`,
   `South Korea`
 ];
+
+export const SortType = {
+  DEFAULT: `default`,
+  DATE: `date`,
+  RATING: `rating`
+};
