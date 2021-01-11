@@ -1,9 +1,9 @@
 import {MONTHS} from "../utils/const.js";
 import {getRunTime} from "../utils/utils.js";
-import Abstract from "./abstract.js";
+import Smart from "./smart.js";
 
-const createFilmDetailsPopup = (film) => {
-  const {title, rating, genre, runtime, commentsCount, comments, poster, originalTitle, director, writers, actors, releaseFullDate, country, fullDescription, ageRestriction, isWatched, isWatchingList, isFavorite} = film;
+const createFilmDetailsPopup = (data) => {
+  const {title, rating, genre, runtime, commentsCount, comments, poster, originalTitle, director, writers, actors, releaseFullDate, country, fullDescription, ageRestriction, isWatched, isWatchingList, isFavorite} = data;
   const day = releaseFullDate.getDate();
   const month = releaseFullDate.getMonth();
   const year = releaseFullDate.getFullYear();
@@ -174,49 +174,45 @@ const createFilmDetailsPopup = (film) => {
   );
 };
 
-export default class FilmDetailsPopup extends Abstract {
+export default class FilmDetailsPopup extends Smart {
   constructor(film) {
     super();
-    this._film = film;
+    this._data = FilmDetailsPopup.parseFilmToData(film);
 
     this._closePopupHandler = this._closePopupHandler.bind(this);
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
     this._watchlistClickHandler = this._watchlistClickHandler.bind(this);
     this._watchedClickHandler = this._watchedClickHandler.bind(this);
+    this._emojiClickHandler = this._emojiClickHandler.bind(this);
+    this._descriptionInputHandler = this._descriptionInputHandler.bind(this);
+    // this._formSubmitHandler = this._formSubmitHandler.bind(this);
+
+    this._setInnerHandlers();
   }
 
   getTemplate() {
-    return createFilmDetailsPopup(this._film);
+    return createFilmDetailsPopup(this._data);
   }
 
-  updateData(update) {
-    if (!update) {
-      return;
-    }
-
-    this._data = Object.assign(
-        {},
-        this._data,
-        update
-    );
-
-    this.updateElement();
+  restoreHandlers() {
+    this._setInnerHandlers();
+    // this.setFormSubmitHandler(this._callback.formSubmit);
   }
 
-  updateElement() {
-    let prevElement = this.getElement();
-    const parent = prevElement.parentElement;
-    this.removeElement();
-
-    const newElement = this.getElement();
-
-    parent.replaceChild(newElement, prevElement);
-    prevElement = null;
+  _setInnerHandlers() {
+    this.getElement()
+      .querySelectorAll(`.film-details__emoji-label img`)
+      .forEach((elem) => elem.addEventListener(`click`, this._emojiClickHandler));
+    this.getElement()
+      .querySelector(`.film-details__comment-input`)
+      .addEventListener(`input`, this._descriptionInputHandler);
   }
 
   _favoriteClickHandler(evt) {
     evt.preventDefault();
+    this._data.scrollPosition = document.querySelector(`.film-details`).scrollTop;
     this._callback.favoriteClick();
+    document.querySelector(`.film-details`).scrollTop = this._data.scrollPosition;
   }
 
   setFavoriteClickHandler(callback) {
@@ -226,7 +222,9 @@ export default class FilmDetailsPopup extends Abstract {
 
   _watchlistClickHandler(evt) {
     evt.preventDefault();
+    this._data.scrollPosition = document.querySelector(`.film-details`).scrollTop;
     this._callback.watchlistClick();
+    document.querySelector(`.film-details`).scrollTop = this._data.scrollPosition;
   }
 
   setWatchlistClickHandler(callback) {
@@ -236,7 +234,9 @@ export default class FilmDetailsPopup extends Abstract {
 
   _watchedClickHandler(evt) {
     evt.preventDefault();
+    this._data.scrollPosition = document.querySelector(`.film-details`).scrollTop;
     this._callback.watchedClick();
+    document.querySelector(`.film-details`).scrollTop = this._data.scrollPosition;
   }
 
   setWatchedClickHandler(callback) {
@@ -246,11 +246,68 @@ export default class FilmDetailsPopup extends Abstract {
 
   _closePopupHandler(evt) {
     evt.preventDefault();
-    this._callback.closePopup();
+    this._callback.closePopup(FilmDetailsPopup.parseDataToFilm(this._data));
   }
 
   setClosePopupHandler(callback) {
     this._callback.closePopup = callback;
     this.getElement().querySelector(`.film-details__close-btn`).addEventListener(`click`, this._closePopupHandler);
+  }
+
+  _emojiClickHandler(evt) {
+    const newEmoji = document.createElement(`img`);
+    newEmoji.src = evt.target.src;
+    newEmoji.style.width = `100%`;
+
+    const newCommentEmoji = document.querySelector(`.film-details__add-emoji-label`);
+    if (newCommentEmoji.firstChild) {
+      newCommentEmoji.removeChild(newCommentEmoji.firstChild);
+    }
+
+    newCommentEmoji.appendChild(newEmoji);
+    this.updateData({
+      newCommentEmojiTemplate: newEmoji
+    }, true);
+  }
+
+  _descriptionInputHandler(evt) {
+    evt.preventDefault();
+    this.updateData({
+      newCommentDescription: evt.target.value
+    }, true);
+  }
+
+  // _formSubmitHandler(evt) {
+  //   evt.preventDefault();
+  //   this._callback.formSubmit(FilmDetailsPopup.parseDataToTask(this._data));
+  // }
+  // setFormSubmitHandler(callback) {
+  //   this._callback.formSubmit = callback;
+  //   this.getElement().querySelector(`form`).addEventListener(`submit`, this._formSubmitHandler);
+  // }
+
+  static parseFilmToData(film) {
+    return Object.assign(
+        {},
+        film,
+        {
+          // isWatched: film.isWatched,
+          // isWatchingList: film.isWatchingList,
+          // isFavorite: film.isFavorite,
+          // commentsCount: film.commentsCount,
+          // comments: film.comments,
+          scrollPosition: null,
+          newCommentEmojiTemplate: null,
+          newCommentDescription: null
+        }
+    );
+  }
+
+  static parseDataToFilm(data) {
+    data = Object.assign({}, data);
+
+    delete data.scrollPosition;
+
+    return data;
   }
 }
