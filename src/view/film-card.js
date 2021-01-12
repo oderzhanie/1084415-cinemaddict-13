@@ -1,12 +1,12 @@
-import {getRunTime} from "../utils/utils.js";
 import Abstract from "./abstract.js";
+import dayjs from "dayjs";
 
 const createFilmCard = (film) => {
-  const {title, poster, rating, shortDescription, genre, runtime, commentsCount, releaseYear, isWatched, isWatchingList, isFavorite} = film;
+  const {title, poster, rating, shortDescription, genre, runtime, commentsCount, releaseFullDate, isWatched, isWatchingList, isFavorite} = film;
 
   const mainGenre = genre[0];
 
-  const filmRuntime = getRunTime(runtime.hours, runtime.minutes);
+  const filmRuntime = dayjs(runtime).format(`H[h] MM[m]`);
 
   const getShortDescription = () => {
     if (shortDescription.length < 140) {
@@ -28,7 +28,7 @@ const createFilmCard = (film) => {
       <h3 class="film-card__title">${title}</h3>
       <p class="film-card__rating">${rating}</p>
       <p class="film-card__info">
-        <span class="film-card__year">${releaseYear}</span>
+        <span class="film-card__year">${releaseFullDate.getFullYear()}</span>
         <span class="film-card__duration">${filmRuntime}</span>
         <span class="film-card__genre">${mainGenre}</span>
       </p>
