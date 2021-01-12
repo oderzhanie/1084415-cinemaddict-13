@@ -50,22 +50,6 @@ export const getRandomDescription = (description) => {
   return randomDescription;
 };
 
-export const getRunTime = (hours, minutes) => {
-  if (hours === 0) {
-    return (
-      ` ${minutes}m`
-    );
-  } else if (minutes === 0) {
-    return (
-      `${hours}h`
-    );
-  } else {
-    return (
-      `${hours}h ${minutes}m`
-    );
-  }
-};
-
 export const updateItem = (items, update) => {
   const index = items.findIndex((item) => item.id === update.id);
 

@@ -1,19 +1,11 @@
-import {MONTHS} from "../utils/const.js";
-import {getRunTime} from "../utils/utils.js";
+/* eslint-disable quotes */
 import Smart from "./smart.js";
+import dayjs from "dayjs";
 
 const createFilmDetailsPopup = (data) => {
   const {title, rating, genre, runtime, commentsCount, comments, poster, originalTitle, director, writers, actors, releaseFullDate, country, fullDescription, ageRestriction, isWatched, isWatchingList, isFavorite} = data;
-  const day = releaseFullDate.getDate();
-  const month = releaseFullDate.getMonth();
-  const year = releaseFullDate.getFullYear();
 
-  const monthToWord = (elem) => {
-    const word = MONTHS[elem];
-    return word;
-  };
-
-  const releaseDate = `${day} ${monthToWord(month)} ${year}`;
+  const releaseDate = dayjs(releaseFullDate).format('DD MMMM YYYY');
 
   const watchingListChecked = isWatchingList ? `checked` : ``;
   const favoriteChecked = isFavorite ? `checked` : ``;
@@ -23,7 +15,7 @@ const createFilmDetailsPopup = (data) => {
   const watchedLabel = isWatched ? `Already watched` : `Mark as watched`;
   const favoriteLabel = isFavorite ? `Added to favorites` : `Add to favorites`;
 
-  const filmRuntime = getRunTime(runtime.hours, runtime.minutes);
+  const filmRuntime = dayjs(runtime).format(`H[h] MM[m]`);
 
   const createGenresTemplate = () => {
     return (
@@ -39,17 +31,7 @@ const createFilmDetailsPopup = (data) => {
     const commentsList = [];
 
     for (let item of comments) {
-      const commentYear = item.date.getFullYear();
-      const commentMonth = monthToWord(item.date.getMonth());
-      const commentDate = item.date.getDate();
-
-      let commentHour = item.date.getHours();
-      if (commentHour < 10) {
-        commentHour = `0${commentHour}`;
-      }
-
-      let commentMinutes = item.date.getMinutes().toString().padStart(2, `0`);
-      const commentFullDate = `${commentYear}/${commentMonth}/${commentDate}  ${commentHour}:${commentMinutes}`;
+      const commentFullDate = dayjs(item.date).format(`YYYY/MM/DD HH:MM`);
 
       item =
           `<li class="film-details__comment">
