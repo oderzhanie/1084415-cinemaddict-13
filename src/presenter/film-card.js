@@ -1,6 +1,7 @@
 import FilmCard from "../view/film-card.js";
 import FilmDetailsPopup from "../view/film-details-popup.js";
 import {render, RenderPosition, remove, replace} from "../utils/render.js";
+import {UserAction, UpdateType} from "../utils/const.js";
 
 export default class FilmCardPresenter {
   constructor(movieListContainer, changeData) {
@@ -83,6 +84,8 @@ export default class FilmCardPresenter {
 
   _handleWatchlistClick() {
     this._changeData(
+        UserAction.UPDATE_FILM,
+        UpdateType.MINOR,
         Object.assign(
             {},
             this._film,
@@ -95,6 +98,8 @@ export default class FilmCardPresenter {
 
   _handleWatchedClick() {
     this._changeData(
+        UserAction.UPDATE_FILM,
+        UpdateType.MINOR,
         Object.assign(
             {},
             this._film,
@@ -107,6 +112,8 @@ export default class FilmCardPresenter {
 
   _handleFavoriteClick() {
     this._changeData(
+        UserAction.UPDATE_FILM,
+        UpdateType.MINOR,
         Object.assign(
             {},
             this._film,

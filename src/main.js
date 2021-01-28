@@ -6,9 +6,13 @@ import FooterStats from "../src/view/footer.js";
 import {generateFilm} from "./mocks/film-card.js";
 import {generateFilter} from "./mocks/filter.js";
 import {render, RenderPosition} from "./utils/render.js";
+import FilmsModel from "./model/films.js";
 
 const films = new Array(CARDS_NUMBER).fill(``).map(generateFilm);
 const filters = generateFilter(films);
+
+const filmsModel = new FilmsModel();
+filmsModel.setFilms(films);
 
 const siteHeader = document.querySelector(`.header`);
 const siteMainElement = document.querySelector(`.main`);
@@ -34,6 +38,6 @@ render(siteHeader, new UserStatus(), RenderPosition.BEFOREEND);
 render(siteFooter, new FooterStats(), RenderPosition.BEFOREEND);
 render(siteMainElement, new MainSiteMenu(filters), RenderPosition.AFTERBEGIN);
 
-const movieList = new MovieList(siteMainElement);
+const movieList = new MovieList(siteMainElement, filmsModel);
 
-movieList.init(films);
+movieList.init();
