@@ -1,25 +1,26 @@
 import Abstract from "./abstract.js";
 import {SortType} from "../utils/const.js";
 
-const createMainSortingFilter = () => {
+const createMainSortingFilter = (currentSortType) => {
   return (
     `<ul class="sort">
-    <li><a href="#" class="sort__button sort__button--active" data-sort-type="${SortType.DEFAULT}">Sort by default</a></li>
-    <li><a href="#" class="sort__button" data-sort-type="${SortType.DATE}">Sort by date</a></li>
-    <li><a href="#" class="sort__button" data-sort-type="${SortType.RATING}">Sort by rating</a></li>
+    <li><a href="#" class="sort__button ${currentSortType === SortType.DEFAULT ? `sort__button--active` : ``}" data-sort-type="${SortType.DEFAULT}">Sort by default</a></li>
+    <li><a href="#" class="sort__button ${currentSortType === SortType.DATE ? `sort__button--active` : ``}" data-sort-type="${SortType.DATE}">Sort by date</a></li>
+    <li><a href="#" class="sort__button ${currentSortType === SortType.RATING ? `sort__button--active` : ``}" data-sort-type="${SortType.RATING}">Sort by rating</a></li>
     </ul>`
   );
 };
 
-export default class MainSortingFilters extends Abstract {
-  constructor() {
+export default class MainSortingFilter extends Abstract {
+  constructor(currentSortType) {
     super();
+    this._currentSortType = currentSortType;
     this._sortTypeChangeHandler = this._sortTypeChangeHandler.bind(this);
-    this._sortActiveChangeHandler = this._sortActiveChangeHandler.bind(this);
+    // this._sortActiveChangeHandler = this._sortActiveChangeHandler.bind(this);
   }
 
   getTemplate() {
-    return createMainSortingFilter();
+    return createMainSortingFilter(this._currentSortType);
   }
 
   _sortTypeChangeHandler(evt) {
@@ -36,17 +37,17 @@ export default class MainSortingFilters extends Abstract {
     this.getElement().addEventListener(`click`, this._sortTypeChangeHandler);
   }
 
-  _sortActiveChangeHandler(evt) {
-    if (evt.target.tagName !== `A`) {
-      return;
-    }
+  // _sortActiveChangeHandler(evt) {
+  //   if (evt.target.tagName !== `A`) {
+  //     return;
+  //   }
 
-    evt.preventDefault();
-    this._callback.sortActiveChange(evt);
-  }
+  //   evt.preventDefault();
+  //   this._callback.sortActiveChange(evt);
+  // }
 
-  setSortActiveChangeHandler(callback) {
-    this._callback.sortActiveChange = callback;
-    this.getElement().querySelectorAll(`.sort__button`).forEach((elem) => elem.addEventListener(`click`, this._sortActiveChangeHandler));
-  }
+  // setSortActiveChangeHandler(callback) {
+  //   this._callback.sortActiveChange = callback;
+  //   this.getElement().querySelectorAll(`.sort__button`).forEach((elem) => elem.addEventListener(`click`, this._sortActiveChangeHandler));
+  // }
 }
