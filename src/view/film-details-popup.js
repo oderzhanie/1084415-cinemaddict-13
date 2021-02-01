@@ -162,12 +162,13 @@ export default class FilmDetailsPopup extends Smart {
     this._data = FilmDetailsPopup.parseFilmToData(film);
 
     this._closePopupHandler = this._closePopupHandler.bind(this);
-    this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
-    this._watchlistClickHandler = this._watchlistClickHandler.bind(this);
-    this._watchedClickHandler = this._watchedClickHandler.bind(this);
+    this._favoritePopupClickHandler = this._favoritePopupClickHandler.bind(this);
+    this._watchlistPopupClickHandler = this._watchlistPopupClickHandler.bind(this);
+    this._watchedPopupClickHandler = this._watchedPopupClickHandler.bind(this);
     this._emojiClickHandler = this._emojiClickHandler.bind(this);
-    this._descriptionInputHandler = this._descriptionInputHandler.bind(this);
-    // this._formSubmitHandler = this._formSubmitHandler.bind(this);
+    // this._descriptionInputHandler = this._descriptionInputHandler.bind(this);
+    // this._addCommentHandler = this._addCommentHandler.bind(this);
+    // this._deleteCommentHandler = this._deleteCommentHandler.bind(this);
 
     this._setInnerHandlers();
   }
@@ -178,57 +179,89 @@ export default class FilmDetailsPopup extends Smart {
 
   restoreHandlers() {
     this._setInnerHandlers();
-    // this.setFormSubmitHandler(this._callback.formSubmit);
+    // this.setAddCommentHandler(this._callback.addComment);
   }
 
   _setInnerHandlers() {
+    // this.getElement()
+    //   .querySelector(`.film-details__control-label--favorite`)
+    //   .addEventListener(`click`, this._favoritePopupClickHandler);
+    // this.getElement()
+    //   .querySelector(`.film-details__control-label--watched`)
+    //   .addEventListener(`click`, this._watchedPopupClickHandler);
+    // this.getElement()
+    //   .querySelector(`.film-details__control-label--watchlist`)
+    //   .addEventListener(`click`, this._watchlistPopupClickHandler);
     this.getElement()
       .querySelectorAll(`.film-details__emoji-label img`)
       .forEach((elem) => elem.addEventListener(`click`, this._emojiClickHandler));
     this.getElement()
       .querySelector(`.film-details__comment-input`)
       .addEventListener(`input`, this._descriptionInputHandler);
+    this.getElement()
+      .querySelector(`.film-details__close-btn`)
+      .addEventListener(`click`, this._closePopupHandler);
+
+    const deleteButtons = this.getElement().querySelectorAll(`.film-details__comment-delete`);
+    if (deleteButtons) {
+      for (let button of deleteButtons) {
+        button.addEventListener(`click`, this._deleteCommentHandler);
+      }
+    }
   }
 
-  _favoriteClickHandler(evt) {
+  _favoritePopupClickHandler(evt) {
     evt.preventDefault();
     this._data.scrollPosition = document.querySelector(`.film-details`).scrollTop;
-    this._callback.favoriteClick();
+    this.updateData({
+      isFavorite: !this.isFavorite
+    }, false);
+
+    this._callback.favoritePopupClick();
     document.querySelector(`.film-details`).scrollTop = this._data.scrollPosition;
   }
 
-  setFavoriteClickHandler(callback) {
-    this._callback.favoriteClick = callback;
-    this.getElement().querySelector(`.film-details__control-label--favorite`).addEventListener(`click`, this._favoriteClickHandler);
+  setFavoritePopupClickHandler(callback) {
+    this._callback.favoritePopupClick = callback;
+    this.getElement().querySelector(`.film-details__control-label--favorite`).addEventListener(`click`, this._favoritePopupClickHandler);
   }
 
-  _watchlistClickHandler(evt) {
+  _watchlistPopupClickHandler(evt) {
     evt.preventDefault();
     this._data.scrollPosition = document.querySelector(`.film-details`).scrollTop;
-    this._callback.watchlistClick();
+    this.updateData({
+      isWatchingList: !this.isWatchingList
+    }, false);
+
+    this._callback.watchlistPopupClick(this._data);
+    document.querySelector(`.film-details`).scrollTop = this._data.scrollPosition;
+
+  }
+
+  setWatchlistPopupClickHandler(callback) {
+    this._callback.watchlistPopupClick = callback;
+    this.getElement().querySelector(`.film-details__control-label--watchlist`).addEventListener(`click`, this._watchlistPopupClickHandler);
+  }
+
+  _watchedPopupClickHandler(evt) {
+    evt.preventDefault();
+    this._data.scrollPosition = document.querySelector(`.film-details`).scrollTop;
+    this.updateData({
+      isWatched: !this.isWatched
+    }, false);
+
+    this._callback.watchedPopupClick();
     document.querySelector(`.film-details`).scrollTop = this._data.scrollPosition;
   }
 
-  setWatchlistClickHandler(callback) {
-    this._callback.watchlistClick = callback;
-    this.getElement().querySelector(`.film-details__control-label--watchlist`).addEventListener(`click`, this._watchlistClickHandler);
-  }
-
-  _watchedClickHandler(evt) {
-    evt.preventDefault();
-    this._data.scrollPosition = document.querySelector(`.film-details`).scrollTop;
-    this._callback.watchedClick();
-    document.querySelector(`.film-details`).scrollTop = this._data.scrollPosition;
-  }
-
-  setWatchedClickHandler(callback) {
-    this._callback.watchedClick = callback;
-    this.getElement().querySelector(`.film-details__control-label--watched`).addEventListener(`click`, this._watchedClickHandler);
+  setWatchedPopupClickHandler(callback) {
+    this._callback.watchedPopupClick = callback;
+    this.getElement().querySelector(`.film-details__control-label--watched`).addEventListener(`click`, this._watchedPopupClickHandler);
   }
 
   _closePopupHandler(evt) {
     evt.preventDefault();
-    this._callback.closePopup(FilmDetailsPopup.parseDataToFilm(this._data));
+    this._callback.closePopup(FilmDetailsPopup.parseDataToFilm(this._data)); // filmDetails обновляется, а модель про это не знает и не обновляет filmsBoard
   }
 
   setClosePopupHandler(callback) {
@@ -252,12 +285,34 @@ export default class FilmDetailsPopup extends Smart {
     }, true);
   }
 
-  _descriptionInputHandler(evt) {
-    evt.preventDefault();
-    this.updateData({
-      newCommentDescription: evt.target.value
-    }, true);
-  }
+  // _descriptionInputHandler(evt) {
+  //   evt.preventDefault();
+  //   this.updateData({
+  //     newCommentDescription: evt.target.value
+  //   }, true);
+  // }
+
+  // _deleteCommentHandler(evt) {
+  //   evt.preventDefault();
+  //   // const parentComment = evt.target.closest(`.film-details__comment`);
+  //   // const commentsList = this.getElement().querySelector(`.film-details__comments-list`);
+  //   // commentsList.removeChild(parentComment);
+  // }
+
+  // setDeleteCommentHandler(callback) {
+  //   this._callback.deleteComment = callback;
+  //   this.getElement().querySelectorAll(`.film-details__comment-delete`).forEach((elem) => elem.addEventListener(`click`, this._deleteCommentHandler));
+  // }
+
+  // _addCommentHandler(evt) {
+  //   evt.preventDefault();
+
+  // }
+
+  // setAddCommentHandler(callback) {
+  //   this._callback.addComment = callback;
+  //   // this.getElement().querySelector(`.film-details__control-label--favorite`).addEventListener(`click`, this._favoriteClickHandler);
+  // }
 
   // _formSubmitHandler(evt) {
   //   evt.preventDefault();
@@ -273,9 +328,9 @@ export default class FilmDetailsPopup extends Smart {
         {},
         film,
         {
-          // isWatched: film.isWatched,
-          // isWatchingList: film.isWatchingList,
-          // isFavorite: film.isFavorite,
+          isWatched: film.isWatched,
+          isWatchingList: film.isWatchingList,
+          isFavorite: film.isFavorite,
           // commentsCount: film.commentsCount,
           // comments: film.comments,
           scrollPosition: null,
